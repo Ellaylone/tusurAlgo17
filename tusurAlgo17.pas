@@ -31,6 +31,7 @@ begin
      new(Dots^.Node^.Next);
      Dots^.Node := Dots^.Node^.Next;
      Dots^.Node^.Data := 3;
+     Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
      Temp := Dots;
@@ -43,6 +44,7 @@ begin
      new(Dots^.Node^.Next);
      Dots^.Node := Dots^.Node^.Next;
      Dots^.Node^.Data := 3;
+     Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
      Temp := Dots;
@@ -55,28 +57,78 @@ begin
      new(Dots^.Node^.Next);
      Dots^.Node := Dots^.Node^.Next;
      Dots^.Node^.Data := 2;
+     Dots^.Node^.Next := nil;
      Dots^.Next := nil;
 end;
-procedure findDot(var s: integer);
+procedure errorEiler(var errorCode : integer);
 begin
-     Dots := First;
-
+     if errorCode = 1 then begin
+          writeln('Error: Dot not found');
+     end else if errorCode = 2 then begin
+          writeln('Error: Nodes not found. Bugged graf?');
+     end;
 end;
 procedure getNode;
+var
+     Node, Temp : PNode;
+     errorCode : integer;
 begin
-
+     errorCode := 2;
+     Node := Dots^.FirstNode;
+     while Node^.Next <> NIL do
+     begin
+          if Node^.Next^.Next = NIL then Temp := Node;
+          Node := Node^.Next;
+     end;
+     write(Node^.Data, ' ');
+     Temp^.Next := nil;
+     if Temp = Dots^.FirstNode then
+     begin
+          if Dots^.FirstNode^.Next <> NIL then
+          begin
+               Dots^.FirstNode^.Next := nil;
+               findDot(Dots^.FirstNode^.Data);
+          end else begin
+               if Dots = First then begin
+                    writeln();
+                    writeln('End');
+               end else begin
+                    errorEiler(errorCode);
+               end;
+          end;
+     end else begin
+          findDot(Temp^.Data);
+     end;
 end;
-procedure checkForEnd;
+procedure findDot(var s : integer);
+var
+     found : boolean;
+     errorCode : integer;
 begin
-
+     errorCode := 1;
+     Dots := First;
+     while Dots <> NIL do
+     begin
+          found := false;
+          if Dots^.Data = s then
+          begin
+               found := true;
+               break;
+          end;
+          Dots := Dots^.Next;
+     end;
+     if found = true then
+     begin
+          getNode();
+     end else begin
+          errorEiler(errorCode);
+     end;
 end;
 procedure findEiler;
+var start : integer;
 begin
-     Dots := First;
-     writeln(First^.Data);
-     writeln(First^.Node^.Data);
-     writeln(Dots^.Data);
-     writeln('find');
+     start := 1;
+     findDot(start);
 end;
 begin
      addGraf();
