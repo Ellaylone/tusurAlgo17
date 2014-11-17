@@ -57,8 +57,22 @@ begin
      Dots^.Node^.Data := 2;
      Dots^.Next := nil;
 end;
+procedure findDot(var s: integer);
+begin
+     Dots := First;
+
+end;
+procedure getNode;
+begin
+
+end;
+procedure checkForEnd;
+begin
+
+end;
 procedure findEiler;
 begin
+     Dots := First;
      writeln(First^.Data);
      writeln(First^.Node^.Data);
      writeln(Dots^.Data);
