@@ -75,6 +75,42 @@ begin
           writeln('Error: Nodes not found. Bugged graf?');
      end;
 end;
+function removeNode(var r : integer) : boolean;
+var
+     Node, Temp : PNode;
+     errorCode : integer;
+begin
+     errorCode := 2;
+     removeNode := false;
+     Node := Dots^.FirstNode;
+     Temp := Node;
+     if r <> 0 then
+     begin
+        while Node <> NIL do
+        begin
+             if Node^.Data = r then
+             begin
+                  Temp^.Next := Node^.Next;
+                  if Temp^.Next = NIL then
+                     if Temp = Node then
+                        begin
+                           Dots^.Node := NIL;
+                        end;
+                  removeNode := true;
+                  break;
+             end else begin
+                 Temp := Node;
+                 Node := Node^.Next;
+             end;
+        end;
+        if removeNode = false then
+        begin
+             errorEiler(errorCode);
+        end;
+     end else begin
+         removeNode := true;
+     end;
+end;
 function getNode : integer;
 var
      Node, Temp : PNode;
@@ -90,6 +126,7 @@ begin
      end;
      write(Node^.Data, ' ');
      Temp^.Next := nil;
+     writeln('# ', Dots^.Data,' ', Node^.Data);
      if Node^.First = true then
      begin
           if Node^.Data <> 0 then
@@ -137,15 +174,19 @@ begin
 end;
 procedure findEiler;
 var
-     dot : integer;
-     nodeStatus : boolean;
+     dot, remove : integer;
+     nodeStatus, removeStatus : boolean;
 begin
      dot := 1;
+     remove := 0;
      write(dot, ' ');
      while dot <> 0 do
      begin
           nodeStatus := findDot(dot);
           if nodeStatus <> true then break;
+          removeStatus := removeNode(remove);
+          if removeStatus <> true then break;
+          remove := dot;
           dot := getNode();
           if dot = -1 then break;
      end;
