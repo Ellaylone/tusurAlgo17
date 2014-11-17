@@ -3,6 +3,7 @@ type
 	PNode = ^Node; {Соединенная вершина}
 	Node = record
 		Data : integer; {Номер вершины}
+                First : boolean; {Флаг первой вершины}
 		Next : PNode; {Ссылка на след соединенную вершину}
 	end;
 	PDot = ^Dot; {Вершина}
@@ -28,9 +29,11 @@ begin
      new(Dots^.Node);
      Dots^.Node^.Data := 2;
      Dots^.FirstNode := Dots^.Node;
+     Dots^.Node^.First := true;
      new(Dots^.Node^.Next);
      Dots^.Node := Dots^.Node^.Next;
      Dots^.Node^.Data := 3;
+     Dots^.Node^.First := false;
      Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
@@ -41,9 +44,11 @@ begin
      new(Dots^.Node);
      Dots^.Node^.Data := 1;
      Dots^.FirstNode := Dots^.Node;
+     Dots^.Node^.First := true;
      new(Dots^.Node^.Next);
      Dots^.Node := Dots^.Node^.Next;
      Dots^.Node^.Data := 3;
+     Dots^.Node^.First := false;
      Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
@@ -54,9 +59,11 @@ begin
      new(Dots^.Node);
      Dots^.Node^.Data := 1;
      Dots^.FirstNode := Dots^.Node;
+     Dots^.Node^.First := true;
      new(Dots^.Node^.Next);
      Dots^.Node := Dots^.Node^.Next;
      Dots^.Node^.Data := 2;
+     Dots^.Node^.First := false;
      Dots^.Node^.Next := nil;
      Dots^.Next := nil;
 end;
@@ -68,13 +75,14 @@ begin
           writeln('Error: Nodes not found. Bugged graf?');
      end;
 end;
-procedure getNode;
+function getNode : integer;
 var
      Node, Temp : PNode;
      errorCode : integer;
 begin
      errorCode := 2;
      Node := Dots^.FirstNode;
+     Temp := Node;
      while Node^.Next <> NIL do
      begin
           if Node^.Next^.Next = NIL then Temp := Node;
@@ -82,25 +90,27 @@ begin
      end;
      write(Node^.Data, ' ');
      Temp^.Next := nil;
-     if Temp = Dots^.FirstNode then
+     if Node^.First = true then
      begin
-          if Dots^.FirstNode^.Next <> NIL then
+          if Node^.Data <> 0 then
           begin
-               Dots^.FirstNode^.Next := nil;
-               findDot(Dots^.FirstNode^.Data);
+               getNode := Node^.Data;
+               Node^.Data := 0;
           end else begin
-               if Dots = First then begin
-                    writeln();
-                    writeln('End');
-               end else begin
-                    errorEiler(errorCode);
-               end;
+              if Dots = First then begin
+                 writeln();
+                 writeln('End');
+                 getNode := 0;
+              end else begin
+                  errorEiler(errorCode);
+                  getNode := -1;
+              end;
           end;
      end else begin
-          findDot(Temp^.Data);
+          getNode := Node^.Data;
      end;
 end;
-procedure findDot(var s : integer);
+function findDot(var s : integer) : boolean;
 var
      found : boolean;
      errorCode : integer;
@@ -119,16 +129,26 @@ begin
      end;
      if found = true then
      begin
-          getNode();
+          findDot := true;
      end else begin
           errorEiler(errorCode);
+          findDot := false;
      end;
 end;
 procedure findEiler;
-var start : integer;
+var
+     dot : integer;
+     nodeStatus : boolean;
 begin
-     start := 1;
-     findDot(start);
+     dot := 1;
+     write(dot, ' ');
+     while dot <> 0 do
+     begin
+          nodeStatus := findDot(dot);
+          if nodeStatus <> true then break;
+          dot := getNode();
+          if dot = -1 then break;
+     end;
 end;
 begin
      addGraf();
