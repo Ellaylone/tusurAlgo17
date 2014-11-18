@@ -13,6 +13,7 @@ type
 		Prev : PDot; {Предыдущая вершина}
 		Node : PNode; {Вершины с которыми есть ребра}
                 FirstNode : PNode; {Ссылка на первую вершину с которой есть ребро}
+                NoNodes : boolean;
 	end;
 var
   Dots, First : PDot;
@@ -44,6 +45,7 @@ begin
      First := Dots;
      Dots^.Data := 1;
      Dots^.Prev := nil;
+     Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 2;
      Dots^.FirstNode := Dots^.Node;
@@ -59,6 +61,7 @@ begin
      Dots := Dots^.Next;
      Dots^.Data := 2;
      Dots^.Prev := Temp;
+     Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 1;
      Dots^.FirstNode := Dots^.Node;
@@ -74,6 +77,7 @@ begin
      Dots := Dots^.Next;
      Dots^.Data := 3;
      Dots^.Prev := Temp;
+     Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 1;
      Dots^.FirstNode := Dots^.Node;
@@ -97,6 +101,7 @@ begin
      Dots := Dots^.Next;
      Dots^.Data := 4;
      Dots^.Prev := Temp;
+     Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 3;
      Dots^.FirstNode := Dots^.Node;
@@ -112,6 +117,7 @@ begin
      Dots := Dots^.Next;
      Dots^.Data := 5;
      Dots^.Prev := Temp;
+     Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 3;
      Dots^.FirstNode := Dots^.Node;
@@ -137,21 +143,27 @@ var
      errorCode : integer;
 begin
      errorCode := 2;
-     removeNode := false;
-     Node := Dots^.FirstNode;
+     removeNode := false; {Флаг удаления}
+     Node := Dots^.FirstNode; {Обходим список с начала}
      Temp := Node;
-     if r <> 0 then
+     if r <> 0 then {0 - только если мы еще не вышли из первой вершины}
      begin
         while Node <> NIL do
         begin
              if Node^.Data = r then
              begin
-                  Temp^.Next := Node^.Next;
-                  if Temp^.Next = NIL then
-                     if Temp^.First = true then
-                        begin
-                           Dots^.Node := NIL;
-                        end;
+                  if Node^.First = true then
+                  begin
+                     if Node^.Next = NIL then
+                     begin
+                        Dots^.NoNodes := true;
+                     end else begin
+                        Node^.Next^.First := true;
+                        Dots^.FirstNode := Node^.Next;
+                     end;
+                  end else begin
+                      Temp^.Next := Node^.Next;
+                  end;
                   removeNode := true;
                   break;
              end else begin
@@ -175,28 +187,30 @@ begin
      errorCode := 2;
      Node := Dots^.FirstNode;
      Temp := Node;
-     while Node^.Next <> NIL do
+     if Dots^.NoNodes <> true then
      begin
-          if Node^.Next^.Next = NIL then Temp := Node;
-          Node := Node^.Next;
-     end;
-     writeln(Node^.Data);
-     Temp^.Next := nil;
-     if Node^.First = true then
-     begin
-	if Dots^.Data = First^.Data then begin
-	   writeln('End');
-	   getNode := 0;
-	end else if Node^.Data <> 0 then 
-	begin
-	   getNode := Node^.Data;
-	   Node^.Data := 0;
-	end else begin
-	   errorEiler(errorCode);
-	   getNode := -1;
-	end;
+          while Node^.Next <> NIL do
+          begin
+               if Node^.Next^.Next = NIL then Temp := Node;
+               Node := Node^.Next;
+          end;
+          writeln(Node^.Data);
+          Temp^.Next := nil;
+          if Node^.First = true then
+          begin
+               Dots^.NoNodes := true;
+	       if Dots^.Data = First^.Data then begin
+                  writeln('End');
+                  getNode := 0;
+	       end else begin
+                   getNode := Node^.Data;
+	       end;
+          end else begin
+              getNode := Node^.Data;
+          end;
      end else begin
-          getNode := Node^.Data;
+         errorEiler(errorCode);
+         getNode := -1;
      end;
 end;
 function findDot(var s : integer) : boolean;
@@ -236,10 +250,12 @@ begin
      begin
           nodeStatus := findDot(dot);
           if nodeStatus <> true then break;
+          writeln('dot: ', Dots^.Data, ' remove: ', remove);
 	  removeStatus := removeNode(remove);
           if removeStatus <> true then break;
           remove := dot;
           dot := getNode();
+          printStatus();
           if dot = -1 then break;
      end;
 end;
