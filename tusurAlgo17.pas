@@ -183,11 +183,15 @@ begin
      while dot <> 0 do
      begin
           nodeStatus := findDot(dot);
+	writeln('nodeStatus: ', nodeStatus);
           if nodeStatus <> true then break;
           removeStatus := removeNode(remove);
+	writeln('remove: ', remove, ' removeStatus: ', removeStatus);
           if removeStatus <> true then break;
           remove := dot;
+	writeln('remove: ', remove);
           dot := getNode();
+	writeln('dot: ', dot);
           if dot = -1 then break;
      end;
 end;
