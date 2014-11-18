@@ -17,26 +17,7 @@ type
 	end;
 var
   Dots, First : PDot;
-
-procedure printStatus;
-begin
-   Dots := First;
-   writeln('#Current snapshot#');
-   while Dots <> NIL do
-      begin
-	 writeln('Dot: ', Dots^.Data);
-	 Dots^.Node := Dots^.FirstNode;
-	 while Dots^.Node <> NIL do
-	    begin
-	       writeln('Node: ', Dots^.Node^.Data);
-	       Dots^.Node := Dots^.Node^.Next;
-	    end;
-	 Dots := Dots^.Next;
-	 writeln();
-      end;
-   writeln('#End snapshot#');
-end;
-procedure addGraf;
+procedure addTestGraf;
 var
      Temp : PDot;
 begin
@@ -181,35 +162,35 @@ begin
 end;
 function getNode : integer;
 var
-     Node, Temp : PNode;
+     Node, Last, PreLast : PNode;
      errorCode : integer;
 begin
      errorCode := 2;
      Node := Dots^.FirstNode;
-     Temp := Node;
+     PreLast := Node;
+     Last := Node;
+     write(Dots^.Data, ' ');
      if Dots^.NoNodes <> true then
      begin
-          while Node^.Next <> NIL do
-          begin
-               if Node^.Next^.Next = NIL then Temp := Node;
-               Node := Node^.Next;
+          while Node <> NIL do begin
+             Last := Node;
+             if Node^.Next <> NIL then PreLast := Node;
+             Node := Node^.Next;
           end;
-          writeln(Node^.Data);
-          Temp^.Next := nil;
-          if Node^.First = true then
+          if Last^.First = true then
           begin
-               Dots^.NoNodes := true;
-	       if Dots^.Data = First^.Data then begin
-                  writeln('End');
-                  getNode := 0;
-	       end else begin
-                   getNode := Node^.Data;
-	       end;
+              Dots^.NoNodes := true;
           end else begin
-              getNode := Node^.Data;
+              PreLast^.Next := NIL;
           end;
+          getNode := Last^.Data;
      end else begin
-         errorEiler(errorCode);
+        if Dots^.Data <> First^.Data then
+        begin
+             errorEiler(errorCode);
+        end else begin
+             writeln();
+        end;
          getNode := -1;
      end;
 end;
@@ -245,22 +226,19 @@ var
 begin
      dot := 1;
      remove := 0;
-     writeln('1');
      while dot <> 0 do
      begin
           nodeStatus := findDot(dot);
           if nodeStatus <> true then break;
-          writeln('dot: ', Dots^.Data, ' remove: ', remove);
 	  removeStatus := removeNode(remove);
           if removeStatus <> true then break;
           remove := dot;
           dot := getNode();
-          printStatus();
           if dot = -1 then break;
      end;
 end;
 begin
-     addGraf();
+     addTestGraf();
      findEiler();
      writeln('Done!');
      readln();
