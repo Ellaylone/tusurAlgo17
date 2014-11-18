@@ -82,6 +82,44 @@ begin
      Dots^.Node := Dots^.Node^.Next;
      Dots^.Node^.Data := 2;
      Dots^.Node^.First := false;
+     new(Dots^.Node^.Next);
+     Dots^.Node := Dots^.Node^.Next;
+     Dots^.Node^.Data := 4;
+     Dots^.Node^.First := false;
+     new(Dots^.Node^.Next);
+     Dots^.Node := Dots^.Node^.Next;
+     Dots^.Node^.Data := 5;
+     Dots^.Node^.First := false;
+     Dots^.Node^.Next := nil;
+
+     new(Dots^.Next);
+     Temp := Dots;
+     Dots := Dots^.Next;
+     Dots^.Data := 4;
+     Dots^.Prev := Temp;
+     new(Dots^.Node);
+     Dots^.Node^.Data := 3;
+     Dots^.FirstNode := Dots^.Node;
+     Dots^.Node^.First := true;
+     new(Dots^.Node^.Next);
+     Dots^.Node := Dots^.Node^.Next;
+     Dots^.Node^.Data := 5;
+     Dots^.Node^.First := false;
+     Dots^.Node^.Next := nil;
+
+     new(Dots^.Next);
+     Temp := Dots;
+     Dots := Dots^.Next;
+     Dots^.Data := 5;
+     Dots^.Prev := Temp;
+     new(Dots^.Node);
+     Dots^.Node^.Data := 3;
+     Dots^.FirstNode := Dots^.Node;
+     Dots^.Node^.First := true;
+     new(Dots^.Node^.Next);
+     Dots^.Node := Dots^.Node^.Next;
+     Dots^.Node^.Data := 4;
+     Dots^.Node^.First := false;
      Dots^.Node^.Next := nil;
      Dots^.Next := nil;
 end;
@@ -100,7 +138,6 @@ var
 begin
      errorCode := 2;
      removeNode := false;
-   writeln('Dot Data: ', Dots^.Data, ' remove: ', r);
      Node := Dots^.FirstNode;
      Temp := Node;
      if r <> 0 then
@@ -111,7 +148,7 @@ begin
              begin
                   Temp^.Next := Node^.Next;
                   if Temp^.Next = NIL then
-                     if Temp = Node then
+                     if Temp^.First = true then
                         begin
                            Dots^.Node := NIL;
                         end;
@@ -143,13 +180,11 @@ begin
           if Node^.Next^.Next = NIL then Temp := Node;
           Node := Node^.Next;
      end;
-   {write(Node^.Data, ' ');}
+     writeln(Node^.Data);
      Temp^.Next := nil;
-{     writeln('# ', Dots^.Data,' ', Node^.Data);}
      if Node^.First = true then
      begin
 	if Dots^.Data = First^.Data then begin
-	   writeln();
 	   writeln('End');
 	   getNode := 0;
 	end else if Node^.Data <> 0 then 
@@ -196,24 +231,16 @@ var
 begin
      dot := 1;
      remove := 0;
-   printStatus();
-   writeln('Start Search');
-   writeln(dot, ' ');
+     writeln('1');
      while dot <> 0 do
      begin
           nodeStatus := findDot(dot);
-	writeln('nodeStatus: ', nodeStatus);
           if nodeStatus <> true then break;
-	writeln('remove: ', remove, ' removeStatus: ', removeStatus);
-	removeStatus := removeNode(remove);
+	  removeStatus := removeNode(remove);
           if removeStatus <> true then break;
           remove := dot;
-	writeln('remove: ', remove);
           dot := getNode();
-	writeln('dot: ', dot);
           if dot = -1 then break;
-	writeln();
-	printStatus();
      end;
 end;
 begin
