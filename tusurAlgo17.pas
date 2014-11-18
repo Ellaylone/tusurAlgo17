@@ -17,6 +17,24 @@ type
 var
   Dots, First : PDot;
 
+procedure printStatus;
+begin
+   Dots := First;
+   writeln('#Current snapshot#');
+   while Dots <> NIL do
+      begin
+	 writeln('Dot: ', Dots^.Data);
+	 Dots^.Node := Dots^.FirstNode;
+	 while Dots^.Node <> NIL do
+	    begin
+	       writeln('Node: ', Dots^.Node^.Data);
+	       Dots^.Node := Dots^.Node^.Next;
+	    end;
+	 Dots := Dots^.Next;
+	 writeln();
+      end;
+   writeln('#End snapshot#');
+end;
 procedure addGraf;
 var
      Temp : PDot;
@@ -82,6 +100,7 @@ var
 begin
      errorCode := 2;
      removeNode := false;
+   writeln('Dot Data: ', Dots^.Data, ' remove: ', r);
      Node := Dots^.FirstNode;
      Temp := Node;
      if r <> 0 then
@@ -124,25 +143,23 @@ begin
           if Node^.Next^.Next = NIL then Temp := Node;
           Node := Node^.Next;
      end;
-     write(Node^.Data, ' ');
+   {write(Node^.Data, ' ');}
      Temp^.Next := nil;
-     writeln('# ', Dots^.Data,' ', Node^.Data);
+{     writeln('# ', Dots^.Data,' ', Node^.Data);}
      if Node^.First = true then
      begin
-          if Node^.Data <> 0 then
-          begin
-               getNode := Node^.Data;
-               Node^.Data := 0;
-          end else begin
-              if Dots = First then begin
-                 writeln();
-                 writeln('End');
-                 getNode := 0;
-              end else begin
-                  errorEiler(errorCode);
-                  getNode := -1;
-              end;
-          end;
+	if Dots^.Data = First^.Data then begin
+	   writeln();
+	   writeln('End');
+	   getNode := 0;
+	end else if Node^.Data <> 0 then 
+	begin
+	   getNode := Node^.Data;
+	   Node^.Data := 0;
+	end else begin
+	   errorEiler(errorCode);
+	   getNode := -1;
+	end;
      end else begin
           getNode := Node^.Data;
      end;
@@ -179,20 +196,24 @@ var
 begin
      dot := 1;
      remove := 0;
-     write(dot, ' ');
+   printStatus();
+   writeln('Start Search');
+   writeln(dot, ' ');
      while dot <> 0 do
      begin
           nodeStatus := findDot(dot);
 	writeln('nodeStatus: ', nodeStatus);
           if nodeStatus <> true then break;
-          removeStatus := removeNode(remove);
 	writeln('remove: ', remove, ' removeStatus: ', removeStatus);
+	removeStatus := removeNode(remove);
           if removeStatus <> true then break;
           remove := dot;
 	writeln('remove: ', remove);
           dot := getNode();
 	writeln('dot: ', dot);
           if dot = -1 then break;
+	writeln();
+	printStatus();
      end;
 end;
 begin
