@@ -10,7 +10,6 @@ type
 	Dot = record
 		Data : integer; {Номер вершины}
 		Next : PDot; {Следующая вершина}
-		Prev : PDot; {Предыдущая вершина}
 		Node : PNode; {Вершины с которыми есть ребра}
                 FirstNode : PNode; {Ссылка на первую вершину с которой есть ребро}
                 NoNodes : boolean;
@@ -18,14 +17,11 @@ type
 var
   Dots, First : PDot;
 procedure addTestGraf;{Создание тестового графа с 5ю вершинами}
-var
-     Temp : PDot;
 begin
      new(Dots);
 
      First := Dots;{Ссылка на первую вершину в списке}
      Dots^.Data := 1;{Номер вершины}
-     Dots^.Prev := nil;{Предыдущая вершина}
      Dots^.NoNodes := False;{Флаг наличия у вершины ребер}
      new(Dots^.Node);{Создание связных вершин}
      Dots^.Node^.Data := 2;
@@ -38,10 +34,8 @@ begin
      Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
-     Temp := Dots;
      Dots := Dots^.Next;
      Dots^.Data := 2;
-     Dots^.Prev := Temp;
      Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 1;
@@ -54,10 +48,8 @@ begin
      Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
-     Temp := Dots;
      Dots := Dots^.Next;
      Dots^.Data := 3;
-     Dots^.Prev := Temp;
      Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 1;
@@ -78,10 +70,8 @@ begin
      Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
-     Temp := Dots;
      Dots := Dots^.Next;
      Dots^.Data := 4;
-     Dots^.Prev := Temp;
      Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 3;
@@ -94,10 +84,8 @@ begin
      Dots^.Node^.Next := nil;
 
      new(Dots^.Next);
-     Temp := Dots;
      Dots := Dots^.Next;
      Dots^.Data := 5;
-     Dots^.Prev := Temp;
      Dots^.NoNodes := False;
      new(Dots^.Node);
      Dots^.Node^.Data := 3;
@@ -115,7 +103,7 @@ begin
      if errorCode = 1 then begin{В списке не найдена вершина}
           writeln('Error: Dot not found');
      end else if errorCode = 2 then begin{У вершины не найдено ожидаемой связной вершины}
-          writeln('Error: Nodes not found. Bugged graf?');
+          writeln('Error: Nodes not found.');
      end;
 end;
 function removeNode(var r : integer) : boolean;{Удаление связной вершины}
